@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stud Devils — Game Day Lineup</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+            background: #fff;
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #000;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 28px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+        .header p { font-size: 13px; color: #444; }
+
+        /* Inning navigation */
+        .inning-nav {
+            display: flex; justify-content: center; gap: 8px;
+            margin-bottom: 24px;
+        }
+        .inning-btn {
+            padding: 10px 20px;
+            font-size: 15px; font-weight: 700;
+            border: 2px solid #000;
+            background: #fff;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: all 0.15s;
+        }
+        .inning-btn:hover { background: #eee; }
+        .inning-btn.active {
+            background: #1a5e1a; color: #fff; border-color: #1a5e1a;
+        }
+
+        /* Diamond container */
+        .diamond-container {
+            position: relative;
+            width: 700px;
+            height: 620px;
+            margin: 0 auto 24px;
+        }
+
+        /* Field background */
+        .field-bg {
+            position: absolute;
+            width: 100%; height: 100%;
+        }
+        .outfield-grass {
+            position: absolute;
+            width: 660px; height: 360px;
+            top: 0; left: 20px;
+            background: #2d7a2d;
+            border-radius: 330px 330px 0 0;
+        }
+        .infield-dirt {
+            position: absolute;
+            width: 240px; height: 240px;
+            top: 230px; left: 230px;
+            background: #c4956a;
+            transform: rotate(45deg);
+            border-radius: 8px;
+        }
+        .infield-grass {
+            position: absolute;
+            width: 140px; height: 140px;
+            top: 280px; left: 280px;
+            background: #2d7a2d;
+            transform: rotate(45deg);
+            border-radius: 6px;
+        }
+        .mound {
+            position: absolute;
+            width: 36px; height: 36px;
+            top: 332px; left: 332px;
+            background: #c4956a;
+            border-radius: 50%;
+        }
+        .home-dirt {
+            position: absolute;
+            width: 80px; height: 80px;
+            top: 480px; left: 310px;
+            background: #c4956a;
+            border-radius: 50%;
+        }
+        /* Foul lines */
+        .foul-line-left, .foul-line-right {
+            position: absolute;
+            height: 2px;
+            background: #fff;
+            top: 510px;
+            transform-origin: right center;
+        }
+        .foul-line-left {
+            width: 500px;
+            left: 20px; top: 200px;
+            transform: rotate(46deg);
+            transform-origin: right center;
+        }
+        .foul-line-right {
+            width: 500px;
+            right: 20px; top: 200px;
+            transform: rotate(-46deg);
+            transform-origin: left center;
+        }
+
+        /* Player positions */
+        .pos {
+            position: absolute;
+            text-align: center;
+            z-index: 10;
+        }
+        .pos-label {
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #fff;
+            background: rgba(0,0,0,0.5);
+            padding: 1px 6px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+            display: block;
+        }
+        .pos-name {
+            font-size: 16px; font-weight: 700;
+            color: #fff;
+            background: #1a5e1a;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            white-space: nowrap;
+            border: 2px solid rgba(255,255,255,0.4);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .pos-name.infield {
+            background: #8B4513;
+        }
+
+        /* Position placements */
+        .pos-p   { top: 310px; left: 350px; transform: translateX(-50%); }
+        .pos-c   { top: 510px; left: 350px; transform: translateX(-50%); }
+        .pos-1b  { top: 340px; left: 510px; transform: translateX(-50%); }
+        .pos-2b  { top: 255px; left: 445px; transform: translateX(-50%); }
+        .pos-3b  { top: 340px; left: 190px; transform: translateX(-50%); }
+        .pos-ss  { top: 255px; left: 255px; transform: translateX(-50%); }
+        .pos-lf  { top: 100px; left: 90px;  transform: translateX(-50%); }
+        .pos-lcf { top: 30px;  left: 240px; transform: translateX(-50%); }
+        .pos-rcf { top: 30px;  left: 460px; transform: translateX(-50%); }
+        .pos-rf  { top: 100px; left: 610px; transform: translateX(-50%); }
+
+        /* Bench */
+        .bench-section {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 20px;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 24px;
+        }
+        .bench-section h3 {
+            font-size: 13px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .bench-names {
+            font-size: 16px; font-weight: 700;
+            color: #444;
+        }
+
+        /* Grid table below */
+        .grid-section {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .grid-section h2 {
+            font-size: 15px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .grid-table {
+            width: 100%; border-collapse: collapse; margin-bottom: 16px;
+        }
+        .grid-table th {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.04em; text-align: center;
+            padding: 6px 8px; border-bottom: 2px solid #000;
+            background: #f5f5f5;
+        }
+        .grid-table td {
+            font-size: 13px; padding: 5px 8px; border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        .grid-table td:first-child {
+            font-weight: 700; text-align: left;
+        }
+        .grid-table tr:last-child td {
+            border-bottom: 2px solid #000;
+        }
+        .grid-table .bench-cell {
+            color: #999; font-style: italic;
+        }
+        .grid-table .highlight-col {
+            background: #e8f5e8;
+        }
+        .grid-table .p1b-cell {
+            font-weight: 700; color: #8B4513;
+        }
+
+        .footer {
+            text-align: center; padding-top: 8px; margin-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        .footer p { font-size: 10px; color: #666; }
+
+        @media print {
+            body { padding: 0.5in; }
+            .inning-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>Stud Devils Game Day Lineup</h1>
+        <p>6 Innings &bull; 13 Players &bull; 10 Fielders &bull; 3 Bench Per Inning</p>
+    </header>
+
+    <!-- Inning Selector -->
+    <div class="inning-nav">
+        <button class="inning-btn active" onclick="showInning(1)">Inn 1</button>
+        <button class="inning-btn" onclick="showInning(2)">Inn 2</button>
+        <button class="inning-btn" onclick="showInning(3)">Inn 3</button>
+        <button class="inning-btn" onclick="showInning(4)">Inn 4</button>
+        <button class="inning-btn" onclick="showInning(5)">Inn 5</button>
+        <button class="inning-btn" onclick="showInning(6)">Inn 6</button>
+    </div>
+
+    <!-- Baseball Diamond -->
+    <div class="diamond-container">
+        <div class="field-bg">
+            <div class="outfield-grass"></div>
+            <div class="infield-dirt"></div>
+            <div class="infield-grass"></div>
+            <div class="mound"></div>
+            <div class="home-dirt"></div>
+        </div>
+
+        <div class="pos pos-p">
+            <span class="pos-label">P</span>
+            <span class="pos-name infield" id="pos-p"></span>
+        </div>
+        <div class="pos pos-c">
+            <span class="pos-label">C</span>
+            <span class="pos-name infield" id="pos-c"></span>
+        </div>
+        <div class="pos pos-1b">
+            <span class="pos-label">1B</span>
+            <span class="pos-name infield" id="pos-1b"></span>
+        </div>
+        <div class="pos pos-2b">
+            <span class="pos-label">2B</span>
+            <span class="pos-name infield" id="pos-2b"></span>
+        </div>
+        <div class="pos pos-3b">
+            <span class="pos-label">3B</span>
+            <span class="pos-name infield" id="pos-3b"></span>
+        </div>
+        <div class="pos pos-ss">
+            <span class="pos-label">SS</span>
+            <span class="pos-name infield" id="pos-ss"></span>
+        </div>
+        <div class="pos pos-lf">
+            <span class="pos-label">LF</span>
+            <span class="pos-name" id="pos-lf"></span>
+        </div>
+        <div class="pos pos-lcf">
+            <span class="pos-label">LC</span>
+            <span class="pos-name" id="pos-lcf"></span>
+        </div>
+        <div class="pos pos-rcf">
+            <span class="pos-label">RC</span>
+            <span class="pos-name" id="pos-rcf"></span>
+        </div>
+        <div class="pos pos-rf">
+            <span class="pos-label">RF</span>
+            <span class="pos-name" id="pos-rf"></span>
+        </div>
+    </div>
+
+    <!-- Bench -->
+    <div class="bench-section">
+        <h3>Bench</h3>
+        <div class="bench-names" id="bench-names"></div>
+    </div>
+
+    <!-- Full Grid Table -->
+    <div class="grid-section">
+        <h2>Full Position Grid</h2>
+        <table class="grid-table" id="grid-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Inn 1</th>
+                    <th>Inn 2</th>
+                    <th>Inn 3</th>
+                    <th>Inn 4</th>
+                    <th>Inn 5</th>
+                    <th>Inn 6</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <footer class="footer">
+        <p>Stud Devils &bull; Game Day Lineup</p>
+    </footer>
+
+    <script>
+        const lineup = {
+            "Theo":    ["RF","C","LF","B","3B","B"],
+            "Cruz":    ["B","2B","SS","LC","P","P"],
+            "Maddox":  ["3B","B","1B","RC","1B","SS"],
+            "Kai":     ["1B","1B","LC","B","SS","LC"],
+            "Donovan": ["SS","LC","B","1B","LC","1B"],
+            "Diego":   ["P","P","RC","SS","B","2B"],
+            "Emmett":  ["LC","B","P","P","RC","3B"],
+            "Jacob":   ["B","RF","RF","C","B","RF"],
+            "Juli":    ["LF","LF","3B","B","RF","B"],
+            "Julian":  ["2B","SS","B","LF","2B","RC"],
+            "Bruce":   ["RC","B","2B","2B","LF","B"],
+            "Michael": ["C","3B","B","RF","C","C"],
+            "Remy":    ["B","RC","C","3B","B","LF"]
+        };
+
+        const posMap = {
+            "P": "pos-p", "C": "pos-c", "1B": "pos-1b", "2B": "pos-2b",
+            "3B": "pos-3b", "SS": "pos-ss", "LF": "pos-lf", "LC": "pos-lcf",
+            "RC": "pos-rcf", "RF": "pos-rf"
+        };
+
+        const p1bPositions = ["P", "1B"];
+
+        let currentInning = 1;
+
+        function showInning(inn) {
+            currentInning = inn;
+
+            // Update buttons
+            document.querySelectorAll('.inning-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i + 1 === inn);
+            });
+
+            // Clear positions
+            Object.values(posMap).forEach(id => {
+                document.getElementById(id).textContent = '';
+            });
+
+            const benchPlayers = [];
+            const idx = inn - 1;
+
+            for (const [name, positions] of Object.entries(lineup)) {
+                const pos = positions[idx];
+                if (pos === "B") {
+                    benchPlayers.push(name);
+                } else {
+                    const elId = posMap[pos];
+                    if (elId) {
+                        document.getElementById(elId).textContent = name;
+                    }
+                }
+            }
+
+            document.getElementById('bench-names').textContent = benchPlayers.join('  /  ');
+
+            // Update grid highlight
+            buildGrid(inn);
+        }
+
+        function buildGrid(activeInn) {
+            const tbody = document.querySelector('#grid-table tbody');
+            tbody.innerHTML = '';
+
+            for (const [name, positions] of Object.entries(lineup)) {
+                const tr = document.createElement('tr');
+                const nameTd = document.createElement('td');
+                nameTd.textContent = name;
+                tr.appendChild(nameTd);
+
+                positions.forEach((pos, i) => {
+                    const td = document.createElement('td');
+                    td.textContent = pos;
+                    if (pos === 'B') td.className = 'bench-cell';
+                    if (p1bPositions.includes(pos)) td.className = 'p1b-cell';
+                    if (i + 1 === activeInn) td.classList.add('highlight-col');
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            }
+        }
+
+        // Initialize
+        showInning(1);
+    </script>
+
+</body>
+</html>
