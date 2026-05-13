@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a5e1a">
     <title>Stud Devils — Game Day Lineup</title>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,6 +14,7 @@
             padding: 16px;
             margin: 0 auto;
             max-width: 1200px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .header {
@@ -27,6 +29,38 @@
             margin-bottom: 4px;
         }
         .header p { font-size: 12px; color: #444; }
+
+        /* Top-level tab navigation */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 18px;
+            border-bottom: 2px solid #000;
+        }
+        .tab-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 12px 14px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: #f7f7f5;
+            color: #555;
+            border: 2px solid #000;
+            border-bottom: none;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            margin: 0 2px -2px;
+        }
+        .tab-btn.active {
+            background: #1a5e1a;
+            color: #fff;
+            border-color: #1a5e1a;
+        }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
 
         /* Inning navigation */
         .inning-nav {
@@ -60,7 +94,7 @@
         .diamond-container {
             position: relative;
             width: 100%;
-            padding-bottom: 88.57%; /* 620/700 aspect ratio */
+            padding-bottom: 88.57%;
         }
         .diamond-inner {
             position: absolute;
@@ -242,10 +276,226 @@
             margin-bottom: 8px;
         }
 
+        /* ========= Batting Order Tab ========= */
+        .batting-wrap { max-width: 720px; margin: 0 auto; }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #111;
+            margin: 6px 0 8px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .section-title .hint {
+            font-size: 10.5px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: none;
+        }
+
+        .lineup {
+            list-style: none;
+            background: #fff;
+            border: 1px solid #e5e5e2;
+            border-radius: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 2px 6px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+        .lineup li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e5e2;
+            background: #fff;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .lineup li:last-child { border-bottom: none; }
+        .lineup li.dragging { opacity: 0.6; background: #fffbe6; }
+        .lineup li.drop-above { border-top: 3px solid #1a5e1a; padding-top: 7px; }
+        .lineup li.drop-below { border-bottom: 3px solid #1a5e1a; padding-bottom: 7px; }
+
+        .grip {
+            color: #999;
+            font-size: 20px;
+            line-height: 1;
+            padding: 4px 4px 4px 0;
+            cursor: grab;
+            flex-shrink: 0;
+        }
+        .grip:active { cursor: grabbing; }
+        .pos-circle {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: #1a5e1a;
+            color: #fff;
+            font-weight: 800;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pos-circle.three-ab { background: #888; }
+        .player-name {
+            font-size: 17px;
+            font-weight: 600;
+            flex: 1;
+        }
+        .ab-badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #1a5e1a;
+            background: #e8f3e8;
+            padding: 3px 7px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .ab-badge.three-ab { color: #888; background: #ececea; }
+
+        .arrows { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .arrow-btn {
+            width: 32px; height: 22px;
+            border: 1px solid #e5e5e2;
+            background: #fafafa;
+            color: #111;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0;
+        }
+        .arrow-btn:active { background: #eaeaea; }
+        .arrow-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+        .batting-actions {
+            display: flex; gap: 8px; margin: 12px 0 4px; flex-wrap: wrap;
+        }
+        .b-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 11px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border-radius: 8px;
+            border: 1px solid #e5e5e2;
+            background: #fff;
+            color: #111;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .b-btn:active { background: #f0f0ee; }
+        .b-btn.primary { background: #1a5e1a; color: #fff; border-color: #134513; }
+        .b-btn.primary:active { background: #134513; }
+
+        .savetag {
+            font-size: 10.5px;
+            color: #666;
+            text-align: center;
+            margin: 6px 0 14px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .savetag.flash { color: #1a5e1a; font-weight: 700; }
+
+        .innings {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        @media (min-width: 520px) { .innings { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 820px) { .innings { grid-template-columns: repeat(3, 1fr); } }
+
+        .inning-card {
+            background: #fff;
+            border: 1px solid #e5e5e2;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .inning-head {
+            background: #1a5e1a;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .inning-head .leadoff-tag {
+            font-size: 9.5px;
+            letter-spacing: 0.08em;
+            opacity: 0.85;
+            font-weight: 600;
+        }
+        .inning-card ol {
+            list-style: none;
+            counter-reset: spot;
+            padding: 6px 0;
+        }
+        .inning-card ol li {
+            counter-increment: spot;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f3f0;
+        }
+        .inning-card ol li:last-child { border-bottom: none; }
+        .inning-card ol li::before {
+            content: counter(spot);
+            font-weight: 800;
+            color: #666;
+            font-size: 11px;
+            min-width: 14px;
+        }
+        .inning-card ol li.leadoff { background: #fff8df; }
+        .inning-card ol li .order-num {
+            margin-left: auto;
+            font-size: 10.5px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .summary {
+            margin-top: 18px;
+            background: #fff;
+            border: 1px solid #e5e5e2;
+            border-radius: 10px;
+            padding: 12px 14px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 4px 0;
+        }
+        .summary-row .label { color: #666; }
+        .summary-row .value { font-weight: 700; }
+
         @media (max-width: 480px) {
             body { padding: 10px; }
             .header h1 { font-size: 18px; }
             .header p { font-size: 11px; }
+            .tab-btn { font-size: 12px; padding: 10px 8px; letter-spacing: 0.05em; }
             .inning-btn {
                 padding: 8px 10px;
                 font-size: 13px;
@@ -256,12 +506,16 @@
             .pos-label { font-size: 8px; padding: 1px 4px; }
             .bench-names { font-size: 13px; }
             .swipe-hint { display: block; }
+            .player-name { font-size: 16px; }
         }
 
         @media print {
             body { padding: 0.5in; }
+            .tab-nav { display: none; }
             .inning-nav { display: none; }
             .swipe-hint { display: none; }
+            .tab-pane { display: block !important; page-break-before: always; }
+            .tab-pane:first-of-type { page-break-before: auto; }
         }
     </style>
 </head>
@@ -272,101 +526,161 @@
         <p>6 Innings &bull; 13 Players &bull; 10 Fielders &bull; 3 Bench Per Inning</p>
     </header>
 
-    <!-- Inning Selector -->
-    <div class="inning-nav">
-        <button class="inning-btn active" onclick="showInning(1)">Inn 1</button>
-        <button class="inning-btn" onclick="showInning(2)">Inn 2</button>
-        <button class="inning-btn" onclick="showInning(3)">Inn 3</button>
-        <button class="inning-btn" onclick="showInning(4)">Inn 4</button>
-        <button class="inning-btn" onclick="showInning(5)">Inn 5</button>
-        <button class="inning-btn" onclick="showInning(6)">Inn 6</button>
-    </div>
+    <!-- Top-level tab navigation -->
+    <nav class="tab-nav" role="tablist">
+        <button class="tab-btn active" data-tab="fielding" role="tab" aria-selected="true">Fielding</button>
+        <button class="tab-btn" data-tab="batting" role="tab" aria-selected="false">Batting Order</button>
+    </nav>
 
-    <!-- Baseball Diamond -->
-    <div class="diamond-wrapper">
-        <div class="diamond-container">
-            <div class="diamond-inner" id="diamond-inner">
-                <div class="outfield-grass"></div>
-                <div class="infield-dirt"></div>
-                <div class="infield-grass"></div>
-                <div class="mound"></div>
-                <div class="home-dirt"></div>
+    <!-- ===== FIELDING TAB ===== -->
+    <section id="fielding-tab" class="tab-pane active" role="tabpanel">
 
-                <div class="pos pos-p">
-                    <span class="pos-label">P</span>
-                    <span class="pos-name infield" id="pos-p"></span>
-                </div>
-                <div class="pos pos-c">
-                    <span class="pos-label">C</span>
-                    <span class="pos-name infield" id="pos-c"></span>
-                </div>
-                <div class="pos pos-1b">
-                    <span class="pos-label">1B</span>
-                    <span class="pos-name infield" id="pos-1b"></span>
-                </div>
-                <div class="pos pos-2b">
-                    <span class="pos-label">2B</span>
-                    <span class="pos-name infield" id="pos-2b"></span>
-                </div>
-                <div class="pos pos-3b">
-                    <span class="pos-label">3B</span>
-                    <span class="pos-name infield" id="pos-3b"></span>
-                </div>
-                <div class="pos pos-ss">
-                    <span class="pos-label">SS</span>
-                    <span class="pos-name infield" id="pos-ss"></span>
-                </div>
-                <div class="pos pos-lf">
-                    <span class="pos-label">LF</span>
-                    <span class="pos-name" id="pos-lf"></span>
-                </div>
-                <div class="pos pos-lcf">
-                    <span class="pos-label">LC</span>
-                    <span class="pos-name" id="pos-lcf"></span>
-                </div>
-                <div class="pos pos-rcf">
-                    <span class="pos-label">RC</span>
-                    <span class="pos-name" id="pos-rcf"></span>
-                </div>
-                <div class="pos pos-rf">
-                    <span class="pos-label">RF</span>
-                    <span class="pos-name" id="pos-rf"></span>
+        <!-- Inning Selector -->
+        <div class="inning-nav">
+            <button class="inning-btn active" onclick="showInning(1)">Inn 1</button>
+            <button class="inning-btn" onclick="showInning(2)">Inn 2</button>
+            <button class="inning-btn" onclick="showInning(3)">Inn 3</button>
+            <button class="inning-btn" onclick="showInning(4)">Inn 4</button>
+            <button class="inning-btn" onclick="showInning(5)">Inn 5</button>
+            <button class="inning-btn" onclick="showInning(6)">Inn 6</button>
+        </div>
+
+        <!-- Baseball Diamond -->
+        <div class="diamond-wrapper">
+            <div class="diamond-container">
+                <div class="diamond-inner" id="diamond-inner">
+                    <div class="outfield-grass"></div>
+                    <div class="infield-dirt"></div>
+                    <div class="infield-grass"></div>
+                    <div class="mound"></div>
+                    <div class="home-dirt"></div>
+
+                    <div class="pos pos-p">
+                        <span class="pos-label">P</span>
+                        <span class="pos-name infield" id="pos-p"></span>
+                    </div>
+                    <div class="pos pos-c">
+                        <span class="pos-label">C</span>
+                        <span class="pos-name infield" id="pos-c"></span>
+                    </div>
+                    <div class="pos pos-1b">
+                        <span class="pos-label">1B</span>
+                        <span class="pos-name infield" id="pos-1b"></span>
+                    </div>
+                    <div class="pos pos-2b">
+                        <span class="pos-label">2B</span>
+                        <span class="pos-name infield" id="pos-2b"></span>
+                    </div>
+                    <div class="pos pos-3b">
+                        <span class="pos-label">3B</span>
+                        <span class="pos-name infield" id="pos-3b"></span>
+                    </div>
+                    <div class="pos pos-ss">
+                        <span class="pos-label">SS</span>
+                        <span class="pos-name infield" id="pos-ss"></span>
+                    </div>
+                    <div class="pos pos-lf">
+                        <span class="pos-label">LF</span>
+                        <span class="pos-name" id="pos-lf"></span>
+                    </div>
+                    <div class="pos pos-lcf">
+                        <span class="pos-label">LC</span>
+                        <span class="pos-name" id="pos-lcf"></span>
+                    </div>
+                    <div class="pos pos-rcf">
+                        <span class="pos-label">RC</span>
+                        <span class="pos-name" id="pos-rcf"></span>
+                    </div>
+                    <div class="pos pos-rf">
+                        <span class="pos-label">RF</span>
+                        <span class="pos-name" id="pos-rf"></span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Bench -->
-    <div class="bench-section">
-        <h3>Bench</h3>
-        <div class="bench-names" id="bench-names"></div>
-    </div>
+        <!-- Bench -->
+        <div class="bench-section">
+            <h3>Bench</h3>
+            <div class="bench-names" id="bench-names"></div>
+        </div>
 
-    <!-- Full Grid Table -->
-    <div class="grid-section">
-        <h2>Full Position Grid</h2>
-        <p class="swipe-hint">Swipe to scroll table</p>
-        <table class="grid-table" id="grid-table">
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Inn 1</th>
-                    <th>Inn 2</th>
-                    <th>Inn 3</th>
-                    <th>Inn 4</th>
-                    <th>Inn 5</th>
-                    <th>Inn 6</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+        <!-- Full Grid Table -->
+        <div class="grid-section">
+            <h2>Full Position Grid</h2>
+            <p class="swipe-hint">Swipe to scroll table</p>
+            <table class="grid-table" id="grid-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Inn 1</th>
+                        <th>Inn 2</th>
+                        <th>Inn 3</th>
+                        <th>Inn 4</th>
+                        <th>Inn 5</th>
+                        <th>Inn 6</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <!-- ===== BATTING ORDER TAB ===== -->
+    <section id="batting-tab" class="tab-pane" role="tabpanel">
+        <div class="batting-wrap">
+
+            <div class="section-title">Batting Order <span class="hint">drag the ⋮⋮ or tap ▲▼</span></div>
+            <ol id="lineup" class="lineup"></ol>
+
+            <div class="batting-actions">
+                <button class="b-btn" id="reset-lineup">Reset to Default</button>
+                <button class="b-btn primary" id="share-lineup">Copy as Text</button>
+            </div>
+            <p class="savetag" id="savetag">Auto-saved on this device</p>
+
+            <div class="section-title">Batting Order Per Inning <span class="hint">8 batters per inning</span></div>
+            <div class="innings" id="innings"></div>
+
+            <div class="summary">
+                <div class="summary-row"><span class="label">Total at-bats</span><span class="value">48 (8 × 6)</span></div>
+                <div class="summary-row"><span class="label">Players with 4 ABs</span><span class="value">9 (spots 1–9)</span></div>
+                <div class="summary-row"><span class="label">Players with 3 ABs</span><span class="value">4 (spots 10–13)</span></div>
+            </div>
+
+        </div>
+    </section>
 
     <footer class="footer">
         <p>Stud Devils &bull; Game Day Lineup</p>
     </footer>
 
     <script>
+        /* ============ Tab switching ============ */
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var target = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(function(b) {
+                    var on = b.dataset.tab === target;
+                    b.classList.toggle('active', on);
+                    b.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                document.querySelectorAll('.tab-pane').forEach(function(p) {
+                    p.classList.toggle('active', p.id === target + '-tab');
+                });
+                try { localStorage.setItem('studDevils.activeTab', target); } catch (e) {}
+            });
+        });
+        try {
+            var savedTab = localStorage.getItem('studDevils.activeTab');
+            if (savedTab) {
+                var savedBtn = document.querySelector('.tab-btn[data-tab="' + savedTab + '"]');
+                if (savedBtn) savedBtn.click();
+            }
+        } catch (e) {}
+
+        /* ============ Fielding view ============ */
         const lineup = {
             "Theo":    ["RF","C","LF","B","3B","B"],
             "Cruz":    ["B","SS","SS","LC","P","P"],
@@ -400,12 +714,10 @@
         }
 
         function showInning(inn) {
-            // Update buttons
             document.querySelectorAll('.inning-btn').forEach(function(btn, i) {
                 btn.classList.toggle('active', i + 1 === inn);
             });
 
-            // Clear positions
             Object.values(posMap).forEach(function(id) {
                 document.getElementById(id).textContent = '';
             });
@@ -476,7 +788,6 @@
                 }
             }, { passive: true });
 
-            // Expose for button clicks
             var origShow = showInning;
             window.showInning = function(inn) {
                 currentInning = inn;
@@ -484,10 +795,284 @@
             };
         })();
 
-        // Scale and init
         scaleDiamond();
         window.addEventListener('resize', scaleDiamond);
         showInning(1);
+
+        /* ============ Batting order builder ============ */
+        const DEFAULT_BATTING_ORDER = [
+            "Theo", "Donovan", "Julian", "Kai", "Jacob",
+            "Maddox", "Cruz", "Emmett", "Diego",
+            "Juli", "Bruce", "Remy", "Michael"
+        ];
+        const BATTING_STORAGE_KEY = "studDevilsLineup.v1";
+        const BATTERS_PER_INNING = 8;
+        const TOTAL_INNINGS = 6;
+        let battingOrder = loadBattingOrder();
+
+        function loadBattingOrder() {
+            try {
+                const raw = localStorage.getItem(BATTING_STORAGE_KEY);
+                if (!raw) return DEFAULT_BATTING_ORDER.slice();
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length === DEFAULT_BATTING_ORDER.length) {
+                    const valid = parsed.every(function(n) { return DEFAULT_BATTING_ORDER.indexOf(n) !== -1; });
+                    if (valid) return parsed;
+                }
+            } catch (e) {}
+            return DEFAULT_BATTING_ORDER.slice();
+        }
+
+        function saveBattingOrder() {
+            try { localStorage.setItem(BATTING_STORAGE_KEY, JSON.stringify(battingOrder)); } catch (e) {}
+            flashSave();
+        }
+
+        let saveFlashTimer = null;
+        function flashSave() {
+            const tag = document.getElementById('savetag');
+            if (!tag) return;
+            tag.textContent = 'Saved ✓';
+            tag.classList.add('flash');
+            clearTimeout(saveFlashTimer);
+            saveFlashTimer = setTimeout(function() {
+                tag.textContent = 'Auto-saved on this device';
+                tag.classList.remove('flash');
+            }, 1200);
+        }
+
+        function renderLineupList() {
+            const ol = document.getElementById('lineup');
+            ol.innerHTML = '';
+            battingOrder.forEach(function(name, idx) {
+                const isThreeAB = idx >= 9;
+                const li = document.createElement('li');
+                li.draggable = true;
+                li.dataset.idx = String(idx);
+                li.innerHTML =
+                    '<span class="grip" aria-hidden="true">⋮⋮</span>' +
+                    '<span class="pos-circle ' + (isThreeAB ? 'three-ab' : '') + '">' + (idx + 1) + '</span>' +
+                    '<span class="player-name"></span>' +
+                    '<span class="ab-badge ' + (isThreeAB ? 'three-ab' : '') + '">' + (isThreeAB ? '3 AB' : '4 AB') + '</span>' +
+                    '<span class="arrows">' +
+                        '<button class="arrow-btn up" aria-label="Move up" ' + (idx === 0 ? 'disabled' : '') + '>▲</button>' +
+                        '<button class="arrow-btn down" aria-label="Move down" ' + (idx === battingOrder.length - 1 ? 'disabled' : '') + '>▼</button>' +
+                    '</span>';
+                li.querySelector('.player-name').textContent = name;
+                ol.appendChild(li);
+            });
+            attachLineupDnD();
+            attachLineupArrows();
+        }
+
+        function renderInningCards() {
+            const container = document.getElementById('innings');
+            container.innerHTML = '';
+            for (var inn = 0; inn < TOTAL_INNINGS; inn++) {
+                var startIdx = (inn * BATTERS_PER_INNING) % battingOrder.length;
+                var card = document.createElement('div');
+                card.className = 'inning-card';
+                var head = document.createElement('div');
+                head.className = 'inning-head';
+                head.innerHTML = '<span>Inning ' + (inn + 1) + '</span><span class="leadoff-tag"></span>';
+                head.querySelector('.leadoff-tag').textContent = 'Leads: ' + battingOrder[startIdx];
+                card.appendChild(head);
+                var list = document.createElement('ol');
+                for (var b = 0; b < BATTERS_PER_INNING; b++) {
+                    var slot = (startIdx + b) % battingOrder.length;
+                    var li = document.createElement('li');
+                    if (b === 0) li.classList.add('leadoff');
+                    var nameSpan = document.createElement('span');
+                    nameSpan.textContent = battingOrder[slot];
+                    var orderSpan = document.createElement('span');
+                    orderSpan.className = 'order-num';
+                    orderSpan.textContent = '#' + (slot + 1);
+                    li.appendChild(nameSpan);
+                    li.appendChild(orderSpan);
+                    list.appendChild(li);
+                }
+                card.appendChild(list);
+                container.appendChild(card);
+            }
+        }
+
+        function renderBatting() {
+            renderLineupList();
+            renderInningCards();
+        }
+
+        function attachLineupArrows() {
+            document.querySelectorAll('#lineup .arrow-btn.up').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    var li = e.currentTarget.closest('li');
+                    var idx = parseInt(li.dataset.idx, 10);
+                    if (idx <= 0) return;
+                    var tmp = battingOrder[idx - 1];
+                    battingOrder[idx - 1] = battingOrder[idx];
+                    battingOrder[idx] = tmp;
+                    saveBattingOrder();
+                    renderBatting();
+                });
+            });
+            document.querySelectorAll('#lineup .arrow-btn.down').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    var li = e.currentTarget.closest('li');
+                    var idx = parseInt(li.dataset.idx, 10);
+                    if (idx >= battingOrder.length - 1) return;
+                    var tmp = battingOrder[idx + 1];
+                    battingOrder[idx + 1] = battingOrder[idx];
+                    battingOrder[idx] = tmp;
+                    saveBattingOrder();
+                    renderBatting();
+                });
+            });
+        }
+
+        /* HTML5 DnD for desktop + Pointer Events for touch */
+        let dragSrcIdx = null;
+
+        function attachLineupDnD() {
+            const items = document.querySelectorAll('#lineup li');
+            items.forEach(function(item) {
+                item.addEventListener('dragstart', onDragStart);
+                item.addEventListener('dragover', onDragOver);
+                item.addEventListener('dragleave', onDragLeave);
+                item.addEventListener('drop', onDrop);
+                item.addEventListener('dragend', onDragEnd);
+                var grip = item.querySelector('.grip');
+                grip.addEventListener('pointerdown', onPointerDown);
+            });
+        }
+
+        function onDragStart(e) {
+            dragSrcIdx = parseInt(this.dataset.idx, 10);
+            this.classList.add('dragging');
+            try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(dragSrcIdx)); } catch (err) {}
+        }
+        function onDragOver(e) {
+            e.preventDefault();
+            if (dragSrcIdx === null) return;
+            var targetIdx = parseInt(this.dataset.idx, 10);
+            if (targetIdx === dragSrcIdx) return;
+            clearDropMarkers();
+            if (targetIdx < dragSrcIdx) this.classList.add('drop-above');
+            else this.classList.add('drop-below');
+        }
+        function onDragLeave() { this.classList.remove('drop-above', 'drop-below'); }
+        function onDrop(e) {
+            e.preventDefault();
+            if (dragSrcIdx === null) return;
+            var targetIdx = parseInt(this.dataset.idx, 10);
+            moveLineupItem(dragSrcIdx, targetIdx);
+        }
+        function onDragEnd() {
+            clearDropMarkers();
+            document.querySelectorAll('#lineup li.dragging').forEach(function(el) { el.classList.remove('dragging'); });
+            dragSrcIdx = null;
+        }
+        function clearDropMarkers() {
+            document.querySelectorAll('#lineup li.drop-above, #lineup li.drop-below').forEach(function(el) {
+                el.classList.remove('drop-above', 'drop-below');
+            });
+        }
+        function moveLineupItem(from, to) {
+            if (from === to || from < 0 || to < 0) return;
+            var moved = battingOrder.splice(from, 1)[0];
+            battingOrder.splice(to, 0, moved);
+            saveBattingOrder();
+            renderBatting();
+        }
+
+        let pointerState = null;
+        function onPointerDown(e) {
+            var li = e.currentTarget.closest('li');
+            if (!li) return;
+            e.preventDefault();
+            pointerState = {
+                pointerId: e.pointerId,
+                sourceIdx: parseInt(li.dataset.idx, 10),
+                sourceEl: li,
+                currentTargetEl: null,
+                currentPos: null
+            };
+            li.classList.add('dragging');
+            if (li.setPointerCapture) li.setPointerCapture(e.pointerId);
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+            document.addEventListener('pointercancel', onPointerUp);
+        }
+        function onPointerMove(e) {
+            if (!pointerState) return;
+            e.preventDefault();
+            var el = document.elementFromPoint(e.clientX, e.clientY);
+            var li = el && el.closest ? el.closest('#lineup li') : null;
+            clearDropMarkers();
+            if (!li || li === pointerState.sourceEl) {
+                pointerState.currentTargetEl = null;
+                pointerState.currentPos = null;
+                return;
+            }
+            var rect = li.getBoundingClientRect();
+            var isAbove = e.clientY < rect.top + rect.height / 2;
+            pointerState.currentTargetEl = li;
+            pointerState.currentPos = isAbove ? 'above' : 'below';
+            li.classList.add(isAbove ? 'drop-above' : 'drop-below');
+        }
+        function onPointerUp() {
+            if (!pointerState) return;
+            var sourceIdx = pointerState.sourceIdx;
+            var sourceEl = pointerState.sourceEl;
+            var currentTargetEl = pointerState.currentTargetEl;
+            var currentPos = pointerState.currentPos;
+            sourceEl.classList.remove('dragging');
+            clearDropMarkers();
+            document.removeEventListener('pointermove', onPointerMove);
+            document.removeEventListener('pointerup', onPointerUp);
+            document.removeEventListener('pointercancel', onPointerUp);
+            if (currentTargetEl) {
+                var targetIdx = parseInt(currentTargetEl.dataset.idx, 10);
+                if (currentPos === 'below') targetIdx += 1;
+                if (sourceIdx < targetIdx) targetIdx -= 1;
+                if (targetIdx !== sourceIdx) moveLineupItem(sourceIdx, targetIdx);
+            }
+            pointerState = null;
+        }
+
+        document.getElementById('reset-lineup').addEventListener('click', function() {
+            if (!confirm('Reset to default batting order?')) return;
+            battingOrder = DEFAULT_BATTING_ORDER.slice();
+            saveBattingOrder();
+            renderBatting();
+        });
+
+        document.getElementById('share-lineup').addEventListener('click', function() {
+            var lines = ['STUD DEVILS LINEUP', ''];
+            battingOrder.forEach(function(n, i) { lines.push((i + 1) + '. ' + n + (i < 9 ? '' : '  (3 AB)')); });
+            lines.push('', 'INNINGS (8 per inning):');
+            for (var inn = 0; inn < TOTAL_INNINGS; inn++) {
+                var start = (inn * BATTERS_PER_INNING) % battingOrder.length;
+                var names = [];
+                for (var b = 0; b < BATTERS_PER_INNING; b++) {
+                    names.push(battingOrder[(start + b) % battingOrder.length]);
+                }
+                lines.push('Inn ' + (inn + 1) + ': ' + names.join(', '));
+            }
+            var text = lines.join('\n');
+            var btn = document.getElementById('share-lineup');
+            var orig = btn.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    btn.textContent = 'Copied ✓';
+                    setTimeout(function() { btn.textContent = orig; }, 1400);
+                }).catch(function() {
+                    window.prompt('Copy the lineup:', text);
+                });
+            } else {
+                window.prompt('Copy the lineup:', text);
+            }
+        });
+
+        renderBatting();
     </script>
 
 </body>
