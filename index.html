@@ -682,19 +682,19 @@
 
         /* ============ Fielding view ============ */
         const lineup = {
-            "Theo":    ["RF","C","LF","B","3B","B"],
-            "Cruz":    ["B","SS","SS","LC","P","P"],
-            "Maddox":  ["3B","B","1B","RC","1B","SS"],
-            "Kai":     ["1B","1B","LC","B","SS","LC"],
-            "Donovan": ["SS","LC","B","1B","LC","1B"],
-            "Diego":   ["P","P","RC","SS","B","2B"],
-            "Emmett":  ["LC","B","P","P","RC","3B"],
-            "Jacob":   ["B","RF","RF","C","B","RF"],
+            "Theo":    ["RF","C","B","RF","3B","B"],
+            "Cruz":    ["SS","LC","P","P","B","LC"],
+            "Maddox":  ["LC","B","1B","1B","LC","3B"],
+            "Kai":     ["1B","1B","LC","B","SS","2B"],
+            "Donovan": ["B","SS","SS","LC","P","P"],
+            "Diego":   ["P","P","RC","SS","B","SS"],
+            "Emmett":  ["3B","3B","B","RC","1B","1B"],
+            "Jacob":   ["B","RF","RF","3B","C","RC"],
             "Juli":    ["LF","LF","3B","B","RF","B"],
-            "Julian":  ["2B","2B","B","LF","2B","RC"],
-            "Bruce":   ["RC","B","2B","2B","LF","B"],
-            "Michael": ["C","3B","B","RF","C","C"],
-            "Remy":    ["B","RC","C","3B","B","LF"]
+            "Remy":    ["B","RC","LF","C","B","LF"],
+            "Julian":  ["2B","2B","B","LF","2B","RF"],
+            "Michael": ["C","B","C","B","LF","C"],
+            "Bruce":   ["RC","B","2B","2B","RC","B"]
         };
 
         const posMap = {
@@ -801,11 +801,11 @@
 
         /* ============ Batting order builder ============ */
         const DEFAULT_BATTING_ORDER = [
-            "Theo", "Donovan", "Julian", "Kai", "Jacob",
-            "Maddox", "Cruz", "Emmett", "Diego",
-            "Juli", "Bruce", "Remy", "Michael"
+            "Donovan", "Theo", "Kai", "Jacob", "Maddox",
+            "Julian", "Cruz", "Michael", "Diego",
+            "Bruce", "Juli", "Emmett", "Remy"
         ];
-        const BATTING_STORAGE_KEY = "studDevilsLineup.v1";
+        const BATTING_STORAGE_KEY = "studDevilsLineup.v3";
         const BATTERS_PER_INNING = 8;
         const TOTAL_INNINGS = 6;
         let battingOrder = loadBattingOrder();
