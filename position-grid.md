@@ -48,14 +48,14 @@
 
 | Player  | Inn 1 | Inn 2 | Inn 3 | Inn 4 | Inn 5 | Inn 6 |
 |---------|-------|-------|-------|-------|-------|-------|
-| Theo    | RF    | C     | Bench | RF    | 3B    | Bench |
+| Donovan | Bench | SS    | SS    | LF    | P     | P     |
 | Cruz    | SS    | LC    | P     | P     | Bench | LF    |
 | Maddox  | LC    | Bench | 1B    | 1B    | LF    | 3B    |
+| Theo    | RF    | C     | Bench | RF    | 3B    | Bench |
 | Kai     | 1B    | 1B    | LF    | Bench | SS    | 2B    |
-| Donovan | Bench | SS    | SS    | LF    | P     | P     |
 | Diego   | P     | P     | RC    | SS    | Bench | SS    |
-| Emmett  | 3B    | 3B    | Bench | RC    | 1B    | 1B    |
 | Jacob   | Bench | RF    | RF    | 3B    | C     | RC    |
+| Emmett  | 3B    | 3B    | Bench | RC    | 1B    | 1B    |
 | Juli    | LF    | LF    | 3B    | Bench | RF    | Bench |
 | Remy    | Bench | RC    | LC    | C     | Bench | LC    |
 | Julian  | 2B    | 2B    | Bench | LC    | 2B    | RF    |

@@ -682,14 +682,14 @@
 
         /* ============ Fielding view ============ */
         const lineup = {
-            "Theo":    ["RF","C","B","RF","3B","B"],
+            "Donovan": ["B","SS","SS","LF","P","P"],
             "Cruz":    ["SS","LC","P","P","B","LF"],
             "Maddox":  ["LC","B","1B","1B","LF","3B"],
+            "Theo":    ["RF","C","B","RF","3B","B"],
             "Kai":     ["1B","1B","LF","B","SS","2B"],
-            "Donovan": ["B","SS","SS","LF","P","P"],
             "Diego":   ["P","P","RC","SS","B","SS"],
-            "Emmett":  ["3B","3B","B","RC","1B","1B"],
             "Jacob":   ["B","RF","RF","3B","C","RC"],
+            "Emmett":  ["3B","3B","B","RC","1B","1B"],
             "Juli":    ["LF","LF","3B","B","RF","B"],
             "Remy":    ["B","RC","LC","C","B","LC"],
             "Julian":  ["2B","2B","B","LC","2B","RF"],
@@ -801,11 +801,11 @@
 
         /* ============ Batting order builder ============ */
         const DEFAULT_BATTING_ORDER = [
-            "Theo", "Cruz", "Maddox", "Donovan", "Kai",
+            "Donovan", "Cruz", "Maddox", "Theo", "Kai",
             "Diego", "Jacob", "Emmett", "Juli",
             "Remy", "Julian", "Michael", "Bruce"
         ];
-        const BATTING_STORAGE_KEY = "studDevilsLineup.v4";
+        const BATTING_STORAGE_KEY = "studDevilsLineup.v5";
         const BATTERS_PER_INNING = 8;
         const TOTAL_INNINGS = 6;
         let battingOrder = loadBattingOrder();
