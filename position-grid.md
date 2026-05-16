@@ -49,17 +49,17 @@
 | Player  | Inn 1 | Inn 2 | Inn 3 | Inn 4 | Inn 5 | Inn 6 |
 |---------|-------|-------|-------|-------|-------|-------|
 | Theo    | RF    | C     | Bench | RF    | 3B    | Bench |
-| Cruz    | SS    | LC    | P     | P     | Bench | LC    |
-| Maddox  | LC    | Bench | 1B    | 1B    | LC    | 3B    |
-| Kai     | 1B    | 1B    | LC    | Bench | SS    | 2B    |
-| Donovan | Bench | SS    | SS    | LC    | P     | P     |
+| Cruz    | SS    | LC    | P     | P     | Bench | LF    |
+| Maddox  | LC    | Bench | 1B    | 1B    | LF    | 3B    |
+| Kai     | 1B    | 1B    | LF    | Bench | SS    | 2B    |
+| Donovan | Bench | SS    | SS    | LF    | P     | P     |
 | Diego   | P     | P     | RC    | SS    | Bench | SS    |
 | Emmett  | 3B    | 3B    | Bench | RC    | 1B    | 1B    |
 | Jacob   | Bench | RF    | RF    | 3B    | C     | RC    |
 | Juli    | LF    | LF    | 3B    | Bench | RF    | Bench |
-| Remy    | Bench | RC    | LF    | C     | Bench | LF    |
-| Julian  | 2B    | 2B    | Bench | LF    | 2B    | RF    |
-| Michael | C     | Bench | C     | Bench | LF    | C     |
+| Remy    | Bench | RC    | LC    | C     | Bench | LC    |
+| Julian  | 2B    | 2B    | Bench | LC    | 2B    | RF    |
+| Michael | C     | Bench | C     | Bench | LC    | C     |
 | Bruce   | RC    | Bench | 2B    | 2B    | RC    | Bench |
 
 ## P+1B Accounting
